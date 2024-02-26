@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+ <html lang="en">
+ <head>
+ 	<meta charset="UTF-8">
+ 	<title>I'm talking with you!</title>
+ 	<style>
+ 	body{
+ 		background:rgba(250,60,60,0.5);
+ 	}
+	div{
+		width: 200px;
+		height: 200px;
+		background-color: red;
+		margin: 300px auto;
+		transform: rotate(45deg);
+		opacity: 0.5;
+		filter: drop-shadow(0px 0px 30px red);
+		box-shadow: 0px 0px 30px red;
+		animation: m 0.8s linear infinite;
+	}
+	@keyframes m{
+		50%{transform: rotate(45deg) scale(0.8,0.8);}
+	
+		80%{transform: rotate(45deg) scale(0.7,0.7);}
+	}
+	div:after{
+		content: "";
+		width:200px;
+		height: 200px;
+		background-color:red;
+		position: relative;
+		display: block;
+		border-radius: 50%;
+		top: -300px;
+		left: 0px;
+	}
+	div:before{
+		content: "";
+		width:200px;
+		height: 200px;
+		background-color:red;
+		position: relative;
+		display: block;
+		border-radius: 50%;
+		top: 0px;
+		left: -100px;
+	}
+	p{
+		font-family:楷体;
+	}
+	</style>
+ </head>
+ <body>
+    <button id="start">开始录音</button>
+    <button id="stop" disabled>停止录音</button>
+    <script>
+        const startButton = document.getElementById('start');
+        const stopButton = document.getElementById('stop');
+        let mediaRecorder;
+        let chunks = [];
+
+        startButton.addEventListener('click', async () => {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+            mediaRecorder.start();
+            chunks = [];
+            mediaRecorder.addEventListener('dataavailable', (event) => {
+                chunks.push(event.data);
+            });
+            startButton.disabled = true;
+            stopButton.disabled = false;
+        });
+
+        stopButton.addEventListener('click', () => {
+            mediaRecorder.stop();
+            startButton.disabled = false;
+            stopButton.disabled = true;
+            sendAudioToServer();
+        });
+
+        function sendAudioToServer() {
+            const formData = new FormData();
+            const blob = new Blob(chunks, { type: 'audio/wav' });
+            formData.append('file', blob, 'audio.wav');
+            fetch('/upload', { method: 'POST', body: formData })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('转换后的文字：', data.text);
+                });
+        }
+    </script>
+  <h1>HELLO</h1>
+  <p>I'm talking with you!</p>
+	<div></div>
+ </body>
+ </html>
+	
