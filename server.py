@@ -13,6 +13,10 @@ client = ZhipuAI(api_key="2a8e2b310d4e524c0cfed8fd501cb11e.yJIpbQ4OzsXo60y3")
 def index():
     return render_template('index.html')
 
+@app.route('login')
+def index():
+    return render_template('login.html')
+
 @app.route('/chat', methods=['POST'])
 def chat():
     try:
