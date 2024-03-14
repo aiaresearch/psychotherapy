@@ -15,7 +15,6 @@ def switchFile(path):
 
         # 打开音频
     with wave.open(path, 'rb') as wr:
-        n_channel = wr.getnchannels()
         params = wr.getparams()
         nframes = wr.getnframes()
         data = wr.readframes(nframes)
